@@ -1,0 +1,12 @@
+.DS_Store
+*.log
+node_modules/
+.venv/
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp

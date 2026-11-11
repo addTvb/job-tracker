@@ -1,0 +1,4 @@
+id,date,company,role,track,source,url,status,updated_at,notes
+2026-03-09-001,2026-03-09,Northwind Labs,Frontend Engineer,frontend,linkedin,https://example.com/jobs/northwind-fe,interview,2026-03-11T10:00:00,Sample screening passed
+2026-03-10-001,2026-03-10,Blue Harbor,Full-Stack Developer,fullstack,hh,https://example.com/jobs/blue-harbor-fs,sent,2026-03-10T18:30:00,Sample row
+2026-03-10-002,2026-03-10,Pixel Grove,React Developer,frontend,referral,,rejected,2026-03-11T09:15:00,"Sample rejection note"

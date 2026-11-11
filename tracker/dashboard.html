@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job Tracker — отклики</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="./data.js"></script>
+  <style>
+    :root {
+      --bg: #f3f1ec;
+      --bg-accent: #e7eee8;
+      --surface: #fffcf7;
+      --ink: #1c2420;
+      --muted: #5c6b63;
+      --line: #d5ddd7;
+      --accent: #1f6b4a;
+      --accent-soft: #d8ebe1;
+      --warn: #9a4d1c;
+      --danger: #8f2f2f;
+      --font: "IBM Plex Sans", "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #dfece4 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #ebe4d8 0%, transparent 50%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: end;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      min-height: 92px;
+    }
+
+    .kpi .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .kpi .value {
+      font-size: 1.65rem;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .kpi .hint {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .chart-box {
+      position: relative;
+      height: 260px;
+    }
+
+    .wide { grid-column: 1 / -1; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    select {
+      appearance: none;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font: inherit;
+      color: var(--ink);
+      min-width: 140px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    tr:hover td { background: #f7faf7; }
+
+    a { color: var(--accent); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .badge.rejected, .badge.withdrawn { background: #f3e0e0; color: var(--danger); }
+    .badge.ghosted { background: #eee8df; color: var(--warn); }
+    .badge.offer { background: #ddeedd; color: #1a5c32; }
+    .badge.interview { background: #dce8f2; color: #1d4f74; }
+    .badge.replied { background: #e5e7f5; color: #3a3f7a; }
+    .badge.sent { background: #ecece8; color: #555; }
+
+    .empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .error {
+      background: #f8e8e8;
+      border: 1px solid #e0b4b4;
+      color: var(--danger);
+      padding: 16px 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 960px) {
+      .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .charts { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Job Tracker</h1>
+        <p>Конверсии откликов · локальные данные из CSV</p>
+      </div>
+      <div class="meta" id="generatedAt">—</div>
+    </header>
+
+    <div id="error" class="error" hidden></div>
+
+    <section class="kpi-grid" id="kpi"></section>
+
+    <section class="charts">
+      <div class="panel">
+        <h2>Воронка</h2>
+        <div class="chart-box"><canvas id="funnelChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <h2>Статусы сейчас</h2>
+        <div class="chart-box"><canvas id="statusChart"></canvas></div>
+      </div>
+      <div class="panel wide">
+        <h2>Новые отклики по неделям</h2>
+        <div class="chart-box"><canvas id="weekChart"></canvas></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Записи</h2>
+      <div class="filters">
+        <select id="filterStatus" aria-label="Статус">
+          <option value="">Все статусы</option>
+        </select>
+        <select id="filterTrack" aria-label="Трек">
+          <option value="">Все треки</option>
+          <option value="frontend">frontend</option>
+          <option value="fullstack">fullstack</option>
+        </select>
+        <select id="filterSource" aria-label="Источник">
+          <option value="">Все источники</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Компания</th>
+              <th>Роль</th>
+              <th>Трек</th>
+              <th>Источник</th>
+              <th>Статус</th>
+              <th>Дней</th>
+              <th>Ссылка</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function fmtPct(v) {
+      return v == null ? '—' : v.toFixed(1).replace(/\.0$/, '') + '%';
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      return iso.slice(0, 10);
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error');
+      el.hidden = false;
+      el.textContent = msg;
+    }
+
+    const data = window.JOB_TRACKER_DATA;
+    if (!data || !data.metrics) {
+      showError('Нет data.js. Запусти: node ~/.cursor/skills/job-tracker/generate-data.js ~/Desktop/job-tracker');
+    } else {
+      const m = data.metrics;
+      document.getElementById('generatedAt').textContent =
+        'обновлено ' + new Date(data.generatedAt).toLocaleString('ru-RU');
+
+      const kpis = [
+        { label: 'Всего', value: String(m.total), hint: 'откликов' },
+        { label: 'В работе', value: String(m.inPipeline), hint: 'ожидают ответа' },
+        { label: 'Ответы', value: fmtPct(m.rates.replyRate), hint: 'доля ответов' },
+        { label: 'Собеседования', value: fmtPct(m.rates.interviewRate), hint: 'доля собеседований' },
+        { label: 'Офферы', value: fmtPct(m.rates.offerRate), hint: 'доля офферов' },
+        { label: 'Отказы', value: fmtPct(m.rates.rejectRate), hint: 'доля отказов' },
+      ];
+
+      document.getElementById('kpi').innerHTML = kpis.map((k) => `
+        <article class="kpi">
+          <div class="label">${k.label}</div>
+          <div class="value">${k.value}</div>
+          <div class="hint">${k.hint}</div>
+        </article>
+      `).join('');
+
+      const funnelLabels = ['Sent+', 'Replied+', 'Interview+', 'Offer'];
+      const funnelValues = [
+        m.funnelReached.sent,
+        m.funnelReached.replied,
+        m.funnelReached.interview,
+        m.funnelReached.offer,
+      ];
+
+      new Chart(document.getElementById('funnelChart'), {
+        type: 'bar',
+        data: {
+          labels: funnelLabels,
+          datasets: [{
+            data: funnelValues,
+            backgroundColor: ['#9aa8a0', '#5f9fc0', '#3fa87a', '#5cbf84'],
+            borderRadius: 8,
+            barThickness: 36,
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: { precision: 0 },
+              grid: { color: '#e6ebe7' },
+            },
+            y: { grid: { display: false } },
+          },
+        },
+      });
+
+      const statusOrder = ['sent', 'replied', 'interview', 'offer', 'rejected', 'ghosted', 'withdrawn'];
+      const statusColors = {
+        sent: '#9aa8a0',
+        replied: '#7f88c4',
+        interview: '#5f9fc0',
+        offer: '#5cbf84',
+        rejected: '#d06b6b',
+        ghosted: '#d4924a',
+        withdrawn: '#b87a7a',
+      };
+      const statusLabels = statusOrder.filter((s) => (m.byStatus[s] || 0) > 0);
+      const statusData = statusLabels.map((s) => m.byStatus[s]);
+
+      new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+          labels: statusLabels,
+          datasets: [{
+            data: statusData,
+            backgroundColor: statusLabels.map((s) => statusColors[s]),
+            borderWidth: 0,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12 } },
+          },
+          cutout: '58%',
+        },
+      });
+
+      const weekLabels = Object.keys(m.byWeek);
+      const weekValues = weekLabels.map((k) => m.byWeek[k]);
+
+      new Chart(document.getElementById('weekChart'), {
+        type: 'line',
+        data: {
+          labels: weekLabels,
+          datasets: [{
+            label: 'Отклики',
+            data: weekValues,
+            borderColor: '#3fa87a',
+            backgroundColor: '#b8e0c8',
+            fill: true,
+            tension: 0.35,
+            pointRadius: 4,
+            pointBackgroundColor: '#5cbf84',
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 },
+              grid: { color: '#e6ebe7' },
+            },
+            x: { grid: { display: false } },
+          },
+        },
+      });
+
+      const statusSelect = document.getElementById('filterStatus');
+      statusOrder.forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        statusSelect.appendChild(opt);
+      });
+
+      const sourceSelect = document.getElementById('filterSource');
+      Object.keys(m.bySource).forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        sourceSelect.appendChild(opt);
+      });
+
+      const tbody = document.getElementById('tbody');
+
+      function renderTable() {
+        const fs = statusSelect.value;
+        const ft = document.getElementById('filterTrack').value;
+        const fsrc = sourceSelect.value;
+        let rows = [...data.records].sort((a, b) =>
+          (b.date || '').localeCompare(a.date || '') || (b.id || '').localeCompare(a.id || '')
+        );
+        if (fs) rows = rows.filter((r) => r.status === fs);
+        if (ft) rows = rows.filter((r) => r.track === ft);
+        if (fsrc) rows = rows.filter((r) => r.source === fsrc);
+
+        if (!rows.length) {
+          tbody.innerHTML = '<tr><td colspan="8" class="empty">Нет записей по фильтру</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = rows.map((r) => `
+          <tr>
+            <td>${fmtDate(r.date)}</td>
+            <td>${escapeHtml(r.company)}</td>
+            <td>${escapeHtml(r.role)}</td>
+            <td>${escapeHtml(r.track)}</td>
+            <td>${escapeHtml(r.source)}</td>
+            <td><span class="badge ${escapeHtml(r.status)}">${escapeHtml(r.status)}</span></td>
+            <td>${r.daysSinceUpdate == null ? '—' : r.daysSinceUpdate}</td>
+            <td>${r.url ? `<a href="${escapeAttr(r.url)}" target="_blank" rel="noopener">открыть</a>` : '—'}</td>
+          </tr>
+        `).join('');
+      }
+
+      function escapeHtml(s) {
+        return String(s ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function escapeAttr(s) {
+        return escapeHtml(s).replace(/'/g, '&#39;');
+      }
+
+      statusSelect.addEventListener('change', renderTable);
+      document.getElementById('filterTrack').addEventListener('change', renderTable);
+      sourceSelect.addEventListener('change', renderTable);
+      renderTable();
+    }
+  </script>
+</body>
+</html>
