@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Job Tracker — отклики</title>
+  <title>Job Tracker — Applications</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="./data.js"></script>
   <style>
@@ -225,7 +225,7 @@
     <header>
       <div>
         <h1>Job Tracker</h1>
-        <p>Конверсии откликов · локальные данные из CSV</p>
+        <p>Application conversion · local CSV data</p>
       </div>
       <div class="meta" id="generatedAt">—</div>
     </header>
@@ -236,46 +236,46 @@
 
     <section class="charts">
       <div class="panel">
-        <h2>Воронка</h2>
+        <h2>Funnel</h2>
         <div class="chart-box"><canvas id="funnelChart"></canvas></div>
       </div>
       <div class="panel">
-        <h2>Статусы сейчас</h2>
+        <h2>Current statuses</h2>
         <div class="chart-box"><canvas id="statusChart"></canvas></div>
       </div>
       <div class="panel wide">
-        <h2>Новые отклики по неделям</h2>
+        <h2>New applications by week</h2>
         <div class="chart-box"><canvas id="weekChart"></canvas></div>
       </div>
     </section>
 
     <section class="panel">
-      <h2>Записи</h2>
+      <h2>Records</h2>
       <div class="filters">
-        <select id="filterStatus" aria-label="Статус">
-          <option value="">Все статусы</option>
+        <select id="filterStatus" aria-label="Status">
+          <option value="">All statuses</option>
         </select>
-        <select id="filterTrack" aria-label="Трек">
-          <option value="">Все треки</option>
+        <select id="filterTrack" aria-label="Track">
+          <option value="">All tracks</option>
           <option value="frontend">frontend</option>
           <option value="fullstack">fullstack</option>
         </select>
-        <select id="filterSource" aria-label="Источник">
-          <option value="">Все источники</option>
+        <select id="filterSource" aria-label="Source">
+          <option value="">All sources</option>
         </select>
       </div>
       <div style="overflow-x:auto">
         <table>
           <thead>
             <tr>
-              <th>Дата</th>
-              <th>Компания</th>
-              <th>Роль</th>
-              <th>Трек</th>
-              <th>Источник</th>
-              <th>Статус</th>
-              <th>Дней</th>
-              <th>Ссылка</th>
+              <th>Date</th>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Track</th>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Days</th>
+              <th>Link</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -302,19 +302,19 @@
 
     const data = window.JOB_TRACKER_DATA;
     if (!data || !data.metrics) {
-      showError('Нет data.js. Запусти: node ~/.cursor/skills/job-tracker/generate-data.js ~/Desktop/job-tracker');
+      showError('Missing data.js. Run: node skills/job-tracker/generate-data.js');
     } else {
       const m = data.metrics;
       document.getElementById('generatedAt').textContent =
-        'обновлено ' + new Date(data.generatedAt).toLocaleString('ru-RU');
+        'updated ' + new Date(data.generatedAt).toLocaleString('en-US');
 
       const kpis = [
-        { label: 'Всего', value: String(m.total), hint: 'откликов' },
-        { label: 'В работе', value: String(m.inPipeline), hint: 'ожидают ответа' },
-        { label: 'Ответы', value: fmtPct(m.rates.replyRate), hint: 'доля ответов' },
-        { label: 'Собеседования', value: fmtPct(m.rates.interviewRate), hint: 'доля собеседований' },
-        { label: 'Офферы', value: fmtPct(m.rates.offerRate), hint: 'доля офферов' },
-        { label: 'Отказы', value: fmtPct(m.rates.rejectRate), hint: 'доля отказов' },
+        { label: 'Total', value: String(m.total), hint: 'applications sent' },
+        { label: 'In progress', value: String(m.inPipeline), hint: 'awaiting reply or interview' },
+        { label: 'Replies', value: fmtPct(m.rates.replyRate), hint: 'share with any reply' },
+        { label: 'Interviews', value: fmtPct(m.rates.interviewRate), hint: 'share that reached interview' },
+        { label: 'Offers', value: fmtPct(m.rates.offerRate), hint: 'share with a job offer' },
+        { label: 'Rejections', value: fmtPct(m.rates.rejectRate), hint: 'share of explicit rejections' },
       ];
 
       document.getElementById('kpi').innerHTML = kpis.map((k) => `
@@ -401,7 +401,7 @@
         data: {
           labels: weekLabels,
           datasets: [{
-            label: 'Отклики',
+            label: 'Applications',
             data: weekValues,
             borderColor: '#3fa87a',
             backgroundColor: '#b8e0c8',
@@ -456,7 +456,7 @@
         if (fsrc) rows = rows.filter((r) => r.source === fsrc);
 
         if (!rows.length) {
-          tbody.innerHTML = '<tr><td colspan="8" class="empty">Нет записей по фильтру</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="empty">No records match the filter</td></tr>';
           return;
         }
 
@@ -469,7 +469,7 @@
             <td>${escapeHtml(r.source)}</td>
             <td><span class="badge ${escapeHtml(r.status)}">${escapeHtml(r.status)}</span></td>
             <td>${r.daysSinceUpdate == null ? '—' : r.daysSinceUpdate}</td>
-            <td>${r.url ? `<a href="${escapeAttr(r.url)}" target="_blank" rel="noopener">открыть</a>` : '—'}</td>
+            <td>${r.url ? `<a href="${escapeAttr(r.url)}" target="_blank" rel="noopener">open</a>` : '—'}</td>
           </tr>
         `).join('');
       }

@@ -39,10 +39,10 @@ Short intro.
 
 | Element | How |
 |---------|-----|
-| Sections (EN) | `ABOUT ME`, `EXPERIENCE`, `SKILLS`, optional `PROJECTS` |
-| Sections (RU) | `ОБО МНЕ`, `ОПЫТ`, `НАВЫКИ`, optional `ПРОЕКТЫ` |
+| Sections | `ABOUT ME`, `EXPERIENCE`, `SKILLS`, optional `PROJECTS` |
 | Jobs | `**Role - Company** *Period · Remote*` then `-` bullets |
 | Skills | `**Block:** a, b, c` — one block per line |
+| Language | English |
 | Forbidden | tables, emoji, multi-column layouts |
 
 Name and contacts always come from `resume/master.md`. Role title follows the vacancy.

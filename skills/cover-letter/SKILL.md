@@ -2,9 +2,8 @@
 name: cover-letter
 description: >-
   Writes only a cover letter for one vacancy using resume/master.md from this
-  repository. Trigger: "сопровод" or "cover letter" with a vacancy URL/text.
-  Does not rewrite the resume. After the letter, logs the application via
-  job-tracker.
+  repository. Trigger: "cover letter" with a vacancy URL/text. Does not rewrite
+  the resume. After the letter, logs the application via job-tracker.
 ---
 
 # Cover Letter
@@ -17,6 +16,8 @@ Only the cover letter. Master resume is **always** loaded from:
 
 Shared prompt: [../apply/cover-letter.md](../apply/cover-letter.md)
 
+All output is in **English**.
+
 ## Resolve paths
 
 Same as apply: realpath of this skill’s `../..` = repo root.  
@@ -24,8 +25,8 @@ Resume file: `<repo>/resume/master.md`
 
 ## When to use
 
-- Keyword `сопровод` + vacancy URL/text
-- “only cover letter”, “cover letter”, without asking to tailor the resume
+- “cover letter” or “only cover letter” with a vacancy URL/text
+- User wants a letter without tailoring the resume
 
 Full resume + letter → skill `apply`.
 
@@ -48,11 +49,11 @@ Cover letter:
 ### Output rules
 
 1. One message focused on the letter
-2. Single plain-text fenced code block (optional `Subject:` / `Тема:` + 5 paragraphs)
+2. Single plain-text fenced code block (optional `Subject:` + 5 paragraphs)
 3. Nothing before the block (no analysis)
 4. After the block — only tracker line: `Tracker: {id} · sent`
 5. No em-dash (—) or en-dash (–)
-6. 120–180 words; language = vacancy language
+6. 120–180 words; English
 
 ### Job tracker
 

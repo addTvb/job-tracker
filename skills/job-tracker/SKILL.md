@@ -4,8 +4,8 @@ description: >-
   Tracks job applications in a local CSV inside this repo and refreshes an HTML
   dashboard with conversion rates and charts. Use when the user mentions tracker,
   log application, application status, rejection, stats, dashboard, job tracker,
-  трекер, запиши отклик, статус отклика, статистика откликов, or when the apply /
-  cover-letter skills finish and should log the application automatically.
+  or when the apply / cover-letter skills finish and should log the application
+  automatically.
 ---
 
 # Job Tracker
@@ -24,9 +24,9 @@ Do not use remote databases or Google Docs for storage.
 
 ## When to use
 
-- “log application”, “tracker”, “запиши отклик”, “трекер”
+- “log application”, “tracker”, “add application”
 - Status updates: rejection, interview, offer, ghosted
-- “stats”, “conversion”, “dashboard”, “статистика откликов”
+- “stats”, “conversion”, “dashboard”
 - Auto-hook after `apply` / `cover-letter`
 
 ## Workflow
@@ -100,7 +100,7 @@ After manual CSV edits: `node "$CLI" generate --dir "$DIR"`.
 
 ## Response style
 
-Short: what changed, id, status, 1–2 metrics. Do not dump the whole CSV.
+Short: what changed, id, status, 1–2 metrics. Do not dump the whole CSV. Reply in English.
 
 ## Anti-patterns
 

@@ -1,40 +1,40 @@
-Ты пишешь сопроводительное письмо от первого лица. Цель: живой текст под задачу найма, без шаблонного ИИ-тона.
+You write a first-person cover letter. Goal: a natural letter aimed at the hiring need, without generic AI tone.
 
-## Входные данные
+## Inputs
 
-ВАКАНСИЯ:
+VACANCY:
 <<<
-{описание вакансии}
+{job description}
 >>>
 
-РЕЗЮМЕ:
+RESUME:
 <<<
-{текст резюме — только из resume/master.md или одобренной адаптации}
+{resume text — only from resume/master.md or an approved tailored version}
 >>>
 
-## Логика
+## Logic
 
-1. Найди, ЗАЧЕМ нанимают: продукт, боль, цель команды. Своими словами.
-2. Не список навыков. Формат: понял задачи → как подойду → один релевантный кейс из резюме.
-3. Не выдумывай опыт, метрики, компании вне резюме.
-4. Не копируй лексику JD дословно; переформулируй смысл.
+1. Find WHY they are hiring: product, pain, team goal. In your own words.
+2. Not a skill list. Shape: I understood the needs → how I would approach them → one relevant case from the resume.
+3. Do not invent experience, metrics, or companies outside the resume.
+4. Do not copy JD wording verbatim; rephrase the meaning.
 
-## Стиль
+## Style
 
-- Спокойный, уверенный тон
-- Без клише: «с большим интересом», «буду рад внести вклад», «командный игрок», «страстно увлечен» и т.п.
-- Без длинного тире (—) и полуторного (–); только дефис (-) или запятые
-- Язык письма = язык вакансии
-- 120–180 слов, ровно 5 абзацев
+- Calm, confident tone
+- Avoid clichés: “I am excited to apply”, “I would be a great fit”, “passionate team player”, “thrilled by your mission”, etc.
+- No em dash (—) or en dash (–); use hyphen (-) or commas
+- Write the letter in **English**
+- 120–180 words, exactly 5 paragraphs
 
-## Структура (5 абзацев)
+## Structure (5 paragraphs)
 
-1. Приветствие: «Здравствуйте! Меня зовут [Имя из резюме], я [роль], [одно краткое достижение из резюме].» На EN — тот же смысл (Hello! My name is …).
-2. Что понял по задачам найма (1–2 цели своими словами).
-3. Как будешь решать на практике (2–3 конкретных действия, без канцелярита и копипаста JD).
-4. Один самый релевантный кейс из резюме (что сделал, контекст, результат).
-5. Короткое живое закрытие без штампа «готов созвониться, когда удобно».
+1. Greeting: “Hello! My name is [Name from resume], I’m a [role], [one short achievement from the resume].”
+2. What you understood about the hiring goals (1–2 aims in your own words).
+3. How you would solve them in practice (2–3 concrete actions; no jargon paste from the JD).
+4. One most relevant resume case (what you did, context, result).
+5. A short human closing — not the stock phrase “happy to hop on a call at your convenience”.
 
-## Вывод
+## Output
 
-Только готовое письмо: опционально строка `Тема:` / `Subject:`, затем 5 абзацев. Без markdown-буллетов и без анализа после текста.
+Only the finished letter: optional `Subject:` line, then 5 paragraphs. No markdown bullets and no analysis after the text.

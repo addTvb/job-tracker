@@ -1,12 +1,11 @@
 ---
 name: apply
 description: >-
-  Tailors a resume and cover letter for one vacancy using ONLY the fictional or
-  user-provided master file at resume/master.md in this repository. Use when the
-  user says apply, tailor resume, отклик, под вакансию, ATS resume, or pastes a
-  job URL/JD and wants an adapted resume plus cover letter. For cover letter
-  only, use the cover-letter skill. After finishing, log the application via
-  job-tracker.
+  Tailors a resume and cover letter for one vacancy using ONLY the master file at
+  resume/master.md in this repository. Use when the user says apply, tailor
+  resume, ATS resume, or pastes a job URL/JD and wants an adapted resume plus
+  cover letter. For cover letter only, use the cover-letter skill. After
+  finishing, log the application via job-tracker.
 ---
 
 # Apply (resume + cover letter)
@@ -19,12 +18,13 @@ Generic application skill for this toolkit. **Always** load the master resume fr
 
 Never invent a different candidate profile. Never read Google Docs or other external resume sources unless the user explicitly asks to replace `resume/master.md`.
 
+All skill output and generated documents are in **English**.
+
 ## Resolve paths
 
 ```bash
 # Skill dir → repo root (skills/apply → ../..)
 REPO="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}" 2>/dev/null || echo "$0")")/../.." && pwd)"
-# Prefer: ask the agent to resolve realpath of this SKILL.md's parent/../..
 RESUME="$REPO/resume/master.md"
 ```
 
@@ -37,7 +37,7 @@ In Cursor: take the absolute path of this `SKILL.md`, go two directories up → 
 ## When to use
 
 - User provides a vacancy URL or JD and wants a tailored resume
-- Phrases: `apply`, `отклик`, `под вакансию`, `tailor resume`, `ATS`
+- Phrases: `apply`, `tailor resume`, `ATS`
 
 Cover letter only → skill `cover-letter`.
 
@@ -63,7 +63,6 @@ Apply:
 ### 1. Load resume
 
 ```bash
-# Example — agent should Read the file tool / cat:
 cat "$REPO/resume/master.md"
 ```
 
@@ -85,7 +84,7 @@ Facts only from `resume/master.md` (+ user answers in chat). No fabricated metri
 Follow [cover-letter.md](cover-letter.md).
 
 - One fenced code block with the letter body
-- Language = vacancy language
+- English only
 
 ### 6. Job tracker hook
 
@@ -101,7 +100,8 @@ Read and follow [../job-tracker/SKILL.md](../job-tracker/SKILL.md):
 - Do not mix in personal data from other projects or chat history about a different person
 - Do not invent employers, metrics, or stack missing from the master
 - Do not skip the tracker hook after a completed apply
+- Do not write Russian (or other non-English) skill/docs output in this project
 
 ## Quick trigger
 
-`apply: <vacancy url>` or `отклик: <url>`
+`apply: <vacancy url>`
